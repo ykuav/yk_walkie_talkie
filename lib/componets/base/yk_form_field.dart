@@ -9,11 +9,23 @@ class YkFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      decoration: InputDecoration(
-        hintText: hintText,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: TextFormField(
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+          hintText: hintText,
+          // border: const OutlineInputBorder(
+          //   borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          //   borderSide: BorderSide(color: Colors.grey),
+          // ),
+          // enabledBorder: const OutlineInputBorder(
+          //   borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          //   borderSide: BorderSide(color: Colors.grey),
+          // ),
+        ),
+        validator: validator,
       ),
-      validator: validator,
     );
   }
 }

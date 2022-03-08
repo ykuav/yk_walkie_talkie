@@ -78,15 +78,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget getSelectedWidght() {
     if (selectedIndex == 0) {
-      return YkHomeWidget();
+      return const YkDevices();
     }
     if (selectedIndex == 1) {
-      return YkDevices();
+      return const YkAccount();
     }
-    if (selectedIndex == 2) {
-      return YkAccount();
-    }
-    return YkHomeWidget();
+    return const YkDevices();
   }
 
   @override
@@ -109,10 +106,10 @@ class _MyHomePageState extends State<MyHomePage> {
           });
         },
         items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            label: "首页",
-            icon: Icon(Icons.home),
-          ),
+          // BottomNavigationBarItem(
+          //   label: "首页",
+          //   icon: Icon(Icons.home),
+          // ),
           BottomNavigationBarItem(
             label: "设备",
             icon: Icon(Icons.device_hub),
