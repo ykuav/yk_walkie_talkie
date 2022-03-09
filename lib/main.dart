@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:yk_walkie_talkie/componets/yk_devices.dart';
 import 'package:yk_walkie_talkie/componets/yk_home.dart';
+import 'package:yk_walkie_talkie/pages/device_megaphone_detail.dart';
 import 'package:yk_walkie_talkie/pages/login.dart';
 
 import 'componets/yk_account.dart';
@@ -35,6 +36,8 @@ class MyApp extends StatelessWidget {
         //       title: '易酷app',
         //     ),
         '/login': (context) => const YkLoginPage(),
+        '/device_megaphone_detail': (context) =>
+            const DeviceMegaphoneDetailPage(),
       },
     );
   }
@@ -86,16 +89,24 @@ class _MyHomePageState extends State<MyHomePage> {
     return const YkDevices();
   }
 
+  Widget? getFloatingActionButton() {
+    if (selectedIndex == 0) {
+      return FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: '添加设备',
+        child: const Icon(Icons.add),
+      );
+    } else {
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: null,
       body: getSelectedWidght(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: getFloatingActionButton(),
       bottomNavigationBar: BottomNavigationBar(
         /// 这个很重要
         type: BottomNavigationBarType.fixed,
