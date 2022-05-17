@@ -8,7 +8,6 @@ class YkShoutTTS extends StatefulWidget {
 }
 
 class _YkShoutTTSState extends State<YkShoutTTS> {
-  double _sliderValue = 100;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FocusNode focusNode = FocusNode();
   bool loopPlay = false;

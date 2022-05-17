@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yk_walkie_talkie/protocol/shout_protocol.dart';
 
 class YkDevices extends StatelessWidget {
   const YkDevices({Key? key}) : super(key: key);
@@ -8,7 +9,7 @@ class YkDevices extends StatelessWidget {
     return SafeArea(
       child: ListView(
         children: [
-          deviceCard(context, 1, "易酷测试0001", "YKS130", "YKS0000001", 0, 0),
+          deviceCard(context, 1, "易酷测试0001", "YKS130", "000000000001", 0, 0),
           deviceCard(context, 2, "易酷测试0002", "YKS130", "YKS0000002", 0, 1),
           deviceCard(context, 3, "易酷测试0003", "YKS130", "YKS0000003", 0, 0),
           deviceCard(context, 4, "易酷测试0004", "YKS130", "YKS0000004", 0, 1),
@@ -40,10 +41,11 @@ class YkDevices extends StatelessWidget {
     const cardLabelTextStyle = TextStyle(color: Colors.grey);
 
     return GestureDetector(
-        onTap: () => {
-              if (deviceType == 0)
-                {Navigator.pushNamed(context, "/device_megaphone_detail")}
-            },
+        onTap: () {
+          ShoutProtocol.selectPayload = deviceSN;
+          ShoutProtocol.selectWorkPayload(deviceSN);
+          Navigator.pushNamed(context, "/device_megaphone_detail");
+        },
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(12),

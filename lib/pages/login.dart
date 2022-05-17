@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../componets/base/yk_form_field.dart';
@@ -12,6 +12,11 @@ class YkLoginPage extends StatefulWidget {
 
 class _YkLoginPageState extends State<YkLoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  TextStyle linkTextStyle = const TextStyle(color: Colors.blue);
+  var dio = Dio();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +43,8 @@ class _YkLoginPageState extends State<YkLoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     YkFormField(
-                      hintText: '用户名/手机号',
+                      hintText: '手机号',
+                      controller: _phoneController,
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return '请输入用户名';
@@ -48,6 +54,7 @@ class _YkLoginPageState extends State<YkLoginPage> {
                     ),
                     YkFormField(
                       hintText: '密码',
+                      controller: _passwordController,
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return '请输入密码';
@@ -55,20 +62,66 @@ class _YkLoginPageState extends State<YkLoginPage> {
                         return null;
                       },
                     ),
+                    Row(
+                      children: [
+                        Radio<bool>(
+                            value: false,
+                            groupValue: false,
+                            onChanged: (val) {}),
+                        const Text("我已阅读并同意"),
+                        GestureDetector(
+                          child: Text(
+                            "《服务条款》",
+                            style: linkTextStyle,
+                          ), // TODO: 没有加链接
+                        ),
+                        GestureDetector(
+                          child: Text(
+                            "《隐私政策》",
+                            style: linkTextStyle,
+                          ), // TODO: 没有加链接
+                        ),
+                      ],
+                    ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           minimumSize: const Size.fromHeight(48),
                         ),
-                        onPressed: () {
-                          // Validate will return true if the form is valid, or false if
-                          // the form is invalid.
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // Process data.
+                            var response = await dio.post('/login',
+                                data: {'phone': _formKey.currentState});
                           }
                         },
                         child: const Text('登录'),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              child: Text(
+                                "忘记密码",
+                                style: linkTextStyle,
+                              ),
+                              onTap: () {},
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              child: Text(
+                                "注册账号",
+                                textAlign: TextAlign.right,
+                                style: linkTextStyle,
+                              ),
+                              onTap: () {},
+                            ),
+                          )
+                        ],
                       ),
                     ),
                   ],

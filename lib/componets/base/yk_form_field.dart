@@ -4,7 +4,7 @@ class YkFormField extends StatelessWidget {
   final String hintText;
   final FormFieldValidator<String>? validator;
 
-  const YkFormField({Key? key, required this.hintText, this.validator})
+  const YkFormField({Key? key, required this.hintText, this.validator, required TextEditingController controller})
       : super(key: key);
 
   @override

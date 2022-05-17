@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:opus_dart/opus_dart.dart';
 import 'package:yk_walkie_talkie/componets/yk_devices.dart';
 import 'package:yk_walkie_talkie/componets/yk_home.dart';
 import 'package:yk_walkie_talkie/pages/device_megaphone_detail.dart';
 import 'package:yk_walkie_talkie/pages/login.dart';
+import 'package:yk_walkie_talkie/protocol/shout_protocol.dart';
+import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 
 import 'componets/yk_account.dart';
 
-void main() {
+Future<void> main() async {
+  initOpus(await opus_flutter.load());
+  ShoutProtocol.connect().then((value) => ShoutProtocol.appReg());
   runApp(const MyApp());
 }
 
