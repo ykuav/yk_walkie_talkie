@@ -40,9 +40,7 @@ dependencies:
   flutter_sound: ^9.2.12
   permission_handler: ^9.2.0
   audio_session: ^0.1.6+1
-  opus_flutter: ^3.0.1
-  opus_dart: ^3.0.0
-
+  mic_stream: ^0.6.0
 #  flutter_tags: ^0.4.9+1
 dev_dependencies:
   flutter_test:

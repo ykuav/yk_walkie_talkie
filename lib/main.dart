@@ -10,6 +10,7 @@ import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'componets/yk_account.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   initOpus(await opus_flutter.load());
   ShoutProtocol.connect().then((value) => ShoutProtocol.appReg());
   runApp(const MyApp());

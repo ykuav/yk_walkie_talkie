@@ -1,14 +1,13 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
-import 'package:flutter_sound/public/flutter_sound_recorder.dart';
+import 'package:mic_stream/mic_stream.dart';
 import 'package:yk_walkie_talkie/protocol/shout_protocol.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:logger/logger.dart' show Level, Logger;
-import 'package:flutter_sound_platform_interface/flutter_sound_recorder_platform_interface.dart';
-
 
 class YkShoutRealTime extends StatefulWidget {
   const YkShoutRealTime({Key? key}) : super(key: key);
@@ -19,88 +18,35 @@ class YkShoutRealTime extends StatefulWidget {
 
 class _YkShoutRealTimeState extends State<YkShoutRealTime> {
   double _sliderValue = 100;
-  final FlutterSoundPlayer? _mPlayer =
-      FlutterSoundPlayer(logLevel: Level.warning);
-  final FlutterSoundRecorder? _mRecorder =
-      FlutterSoundRecorder(logLevel: Level.warning);
-  var _mRecorderIsInited = false;
-  var _mPlayerIsInited = false;
-  bool _mplaybackReady = false;
-  StreamSubscription? _mRecordingDataSubscription;
   var isReacrd = false;
+  Stream<Uint8List>? stream;
+  StreamSubscription<List<int>>? listener;
 
   @override
   void initState() {
     super.initState();
-    // Be careful : openAudioSession return a Future.
-    // Do not access your FlutterSoundPlayer or FlutterSoundRecorder before the completion of the Future
-    _mPlayer!.openPlayer().then((value) {
-      setState(() {
-        _mPlayerIsInited = true;
-      });
-    });
-  }
-
-  Future<void> _openRecorder() async {
-    var status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw RecordingPermissionException('Microphone permission not granted');
-    }
-    await _mRecorder!.openRecorder();
-    final session = await AudioSession.instance;
-    await session.configure(AudioSessionConfiguration(
-      avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
-      avAudioSessionCategoryOptions:
-          AVAudioSessionCategoryOptions.allowBluetooth |
-              AVAudioSessionCategoryOptions.defaultToSpeaker,
-      avAudioSessionMode: AVAudioSessionMode.spokenAudio,
-      avAudioSessionRouteSharingPolicy:
-          AVAudioSessionRouteSharingPolicy.defaultPolicy,
-      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
-      androidAudioAttributes: const AndroidAudioAttributes(
-        contentType: AndroidAudioContentType.speech,
-        flags: AndroidAudioFlags.none,
-        usage: AndroidAudioUsage.voiceCommunication,
-      ),
-      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
-      androidWillPauseWhenDucked: true,
-    ));
-
-    setState(() {
-      _mRecorderIsInited = true;
-    });
   }
 
   Future<void> stopRecorder() async {
-    await _mRecorder!.stopRecorder();
-    if (_mRecordingDataSubscription != null) {
-      await _mRecordingDataSubscription!.cancel();
-      _mRecordingDataSubscription = null;
-    }
-    _mplaybackReady = true;
+    listener?.cancel();
   }
 
   Future<void> record() async {
-    await _openRecorder();
+// Init a new Stream
+    var status = await Permission.microphone.request();
+    MicStream.shouldRequestPermission(true);
+    stream = await MicStream.microphone(
+        audioSource: AudioSource.DEFAULT,
+        sampleRate: 8000,
+        channelConfig: ChannelConfig.CHANNEL_IN_MONO,
+        audioFormat: AudioFormat.ENCODING_PCM_16BIT);
 
-    assert(_mRecorderIsInited);
-    // var sink = await createFile();
-    var recordingDataController = StreamController<Food>();
-    _mRecordingDataSubscription =
-        recordingDataController.stream.listen((buffer) {
-      if (buffer is FoodData) {
-        ShoutProtocol.realTimeShout(buffer.data!);
-      }
+// Start listening to the stream
+    listener = stream!.listen((samples) {
+      // log("samples:$samples");
+      ShoutProtocol.realTimeShout(samples);
+      sleep(const Duration(microseconds: 10));
     });
-
-    await _mRecorder!.startRecorder(
-      toStream: recordingDataController.sink,
-      codec: Codec.pcm16,
-      numChannels: 1,
-      sampleRate: 8000,
-      audioSource: AudioSource.microphone,
-      bitRate: 8000
-    );
   }
 
   @override

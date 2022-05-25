@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'package:opus_dart/opus_dart.dart';
@@ -34,6 +35,7 @@ Uint8List wavHeader(
 Future<Uint8List> encode(Uint8List input) async {
   const int sampleRate = 8000;
   const int channels = 1;
+  print("input.len:${input.length} input:$input");
   //Encode and decode using opus
   var opusEncoder = SimpleOpusEncoder(
     sampleRate: sampleRate,
@@ -42,6 +44,7 @@ Future<Uint8List> encode(Uint8List input) async {
   );
 
   Uint8List result = opusEncoder.encode(
-      input: Int16List.fromList(input), maxOutputSizeBytes: 3200);
+      input: Int16List.fromList(input), maxOutputSizeBytes: input.length ~/ 8);
+  print("result.size:${result.length} result:$result");
   return result;
 }

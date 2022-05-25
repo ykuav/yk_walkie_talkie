@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:yk_walkie_talkie/protocol/shout_protocol.dart';
 
 class YkShoutTTS extends StatefulWidget {
   const YkShoutTTS({Key? key}) : super(key: key);
@@ -11,6 +14,8 @@ class _YkShoutTTSState extends State<YkShoutTTS> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final FocusNode focusNode = FocusNode();
   bool loopPlay = false;
+  bool loopPlaying = false;
+  TextEditingController ttsController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +31,7 @@ class _YkShoutTTSState extends State<YkShoutTTS> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 TextFormField(
+                  controller: ttsController,
                   focusNode: focusNode,
                   keyboardType: TextInputType.text,
                   decoration: const InputDecoration(
@@ -41,7 +47,7 @@ class _YkShoutTTSState extends State<YkShoutTTS> {
                   minLines: 5,
                 ),
                 CheckboxListTile(
-                  title: Text("循环播放"),
+                  title: const Text("循环播放"),
                   value: loopPlay,
                   controlAffinity: ListTileControlAffinity.leading,
                   onChanged: (val) {
@@ -57,13 +63,26 @@ class _YkShoutTTSState extends State<YkShoutTTS> {
                       minimumSize: const Size.fromHeight(48),
                     ),
                     onPressed: () {
-                      // Validate will return true if the form is valid, or false if
-                      // the form is invalid.
+                      if (loopPlaying) {
+                        ShoutProtocol.sendBytes(utf8.encode("[17]"));
+                        setState(() {
+                          loopPlaying = false;
+                        });
+                        return;
+                      }
                       if (_formKey.currentState!.validate()) {
-                        // Process data.
+                        var text = ttsController.value.text;
+                        if (loopPlay) {
+                          ShoutProtocol.sendBytes(utf8.encode("[16]$text"));
+                          setState(() {
+                            loopPlaying = true;
+                          });
+                        } else {
+                          ShoutProtocol.sendBytes(utf8.encode("[15]$text"));
+                        }
                       }
                     },
-                    child: const Text('播放'),
+                    child: Text(loopPlaying ? '停止播放' : '播放'),
                   ),
                 ),
               ],
