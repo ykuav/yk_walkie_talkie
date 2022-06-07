@@ -3,8 +3,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:developer';
 import 'package:flutter/services.dart';
-import 'package:opus_dart/opus_dart.dart';
-import 'package:yk_walkie_talkie/util/opus_util.dart';
 
 const token = '123456';
 late Socket socket;
@@ -59,52 +57,25 @@ class ShoutProtocol {
       socket.flush();
       print("****************************************************************");
     });
-    //
-    // if (data.length <= (1023 - 5)) {
-    //   // var wavh =
-    //   //     wavHeader(sampleRate: 8000, channels: 1, fileSize: data.length);
-    //   socket.add(header + data);
-    //   // socket.add(utf8.encode("\r\n"));
-    //   socket.flush();
-    //
-    //   return;
-    // }
-    //
-    // // log("data:$data");
-    // var i = 0;
-    // var j = 0;
-    // var sendData = Uint8List(1024);
-    // while (i < data.length) {
-    //   sendData[j] = data[i];
-    //   if (i > 0 && i % (1023 - 4) == 0) {
-    //     // data = await encode(data);
-    //     // var wavh =
-    //     //     wavHeader(sampleRate: 8000, channels: 1, fileSize: sendData.length);
-    //     socket.add(header + sendData);
-    //     // socket.add(utf8.encode("\r\n"));
-    //     await socket.flush();
-    //     print('send:${header + sendData}');
-    //     if (data.length - i - (1023 - 4) >= 0) {
-    //       sendData = Uint8List(1024);
-    //     } else {
-    //       sendData = Uint8List(data.length - i - 1);
-    //     }
-    //     j = 0;
-    //     i++;
-    //   } else {
-    //     i++;
-    //     j++;
-    //   }
-    // }
-    // if (sendData.isNotEmpty) {
-    //   // data = await encode(data);
-    //   // var wavh =
-    //   //     wavHeader(sampleRate: 8000, channels: 1, fileSize: sendData.length);
-    //   socket.add(header + sendData);
-    //   // socket.add(utf8.encode("\r\n"));
-    //   print('send2:${header + sendData}');
-    //   await socket.flush();
-    // }
-    // print("****************************************************************");
+  }
+
+  static Future<void> uploadFile(
+      String filename, Uint8List data, Function callback) async {
+    print("=================================================================");
+    var header = utf8.encode("[20]${filename.length}$filename");
+    socket.add(header);
+    await socket.flush();
+    int i = 0;
+    while (data.length <= i + 1020) {
+      socket.add(utf8.encode("[21]") + data.buffer.asUint8List(i, 1020));
+      await socket.flush();
+      i += 1020;
+      callback(i);
+    }
+    if (i < data.length) {
+      socket.add(utf8.encode("[21]") + data.buffer.asUint8List(i));
+      await socket.flush();
+      callback(-1);
+    }
   }
 }

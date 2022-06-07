@@ -90,7 +90,7 @@ class YkDevices extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(bottom: 4),
+                          padding: const EdgeInsets.only(bottom: 4),
                           child: Row(
                             children: [
                               const Expanded(
@@ -140,7 +140,7 @@ class YkDevices extends StatelessWidget {
                                 child: Row(
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.only(right: 2),
+                                      padding: const EdgeInsets.only(right: 2),
                                       child: Icon(
                                         Icons.radio_button_on,
                                         color: deviceStatus == 0

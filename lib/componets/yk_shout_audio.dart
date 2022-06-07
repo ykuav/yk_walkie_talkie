@@ -101,7 +101,7 @@ class _YkShoutAudioState extends State<YkShoutAudio> {
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
                     onPressed: () {
-
+                      Navigator.pushNamed(context, "/upload_audio");
                     },
                     child: const Text("上传"),
                   ),
