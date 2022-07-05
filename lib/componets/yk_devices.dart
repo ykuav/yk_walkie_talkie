@@ -1,30 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:yk_walkie_talkie/protocol/shout_protocol.dart';
+import 'package:yk_walkie_talkie/util/api.dart';
 
-class YkDevices extends StatelessWidget {
+class YkDevices extends StatefulWidget {
   const YkDevices({Key? key}) : super(key: key);
+
+  @override
+  _YkDevicesState createState() => _YkDevicesState();
+}
+
+class _YkDevicesState extends State<YkDevices> {
+  var data = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getPayload();
+  }
+
+  void getPayload() async {
+    var response = await postResultList(
+        "${baseUrl}payload/user_get_payload_list", {},
+        headers: {});
+    print("response:${response}");
+    setState(() {
+      data = response;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: ListView(
-        children: [
-          deviceCard(context, 1, "易酷测试0001", "YKS130", "000000000001", 0, 0),
-          deviceCard(context, 2, "易酷测试0002", "YKS130", "YKS0000002", 0, 1),
-          deviceCard(context, 3, "易酷测试0003", "YKS130", "YKS0000003", 0, 0),
-          deviceCard(context, 4, "易酷测试0004", "YKS130", "YKS0000004", 0, 1),
-          deviceCard(context, 5, "易酷测试0005", "YKS130", "YKS0000005", 0, 0),
-          deviceCard(context, 6, "易酷测试0006", "YKS130", "YKS0000006", 0, 1),
-          deviceCard(context, 7, "易酷测试0007", "YKS130", "YKS0000007", 0, 0),
-          deviceCard(context, 8, "易酷测试0008", "YKS130", "YKS0000008", 0, 1),
-        ],
+        // deviceCard(context, 1, "易酷测试0001", "YKS130", "000000000001", 0, 0),
+        children: data
+            .map((e) => deviceCard(
+                context,
+                1,
+                e["payload_alias"],
+                e["payload_device_model"],
+                e["payload_serial_num"],
+                e["payload_device_type"],
+                0))
+            .toList(),
       ),
     );
   }
 
   String getDeviceTypeName(int deviceType) {
-    if (deviceType == 0) {
+    if (deviceType == 1) {
       return "喊话器";
+    }
+    if (deviceType == 2) {
+      return "照明";
+    }
+    if (deviceType == 3) {
+      return "抛投";
     }
     return "未知";
   }

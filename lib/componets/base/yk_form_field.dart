@@ -3,8 +3,16 @@ import 'package:flutter/material.dart';
 class YkFormField extends StatelessWidget {
   final String hintText;
   final FormFieldValidator<String>? validator;
+  final TextEditingController? textEditingController;
 
-  const YkFormField({Key? key, required this.hintText, this.validator, required TextEditingController controller})
+  final bool? obscureText;
+
+  const YkFormField(
+      {Key? key,
+      required this.hintText,
+      this.validator,
+      this.obscureText,
+      this.textEditingController})
       : super(key: key);
 
   @override
@@ -12,6 +20,8 @@ class YkFormField extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: TextFormField(
+        controller: textEditingController,
+        obscureText: obscureText ?? false,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
           hintText: hintText,

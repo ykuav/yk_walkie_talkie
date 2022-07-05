@@ -9,6 +9,8 @@ import 'package:mic_stream/mic_stream.dart';
 import 'package:yk_walkie_talkie/protocol/shout_protocol.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../util/shared_preferences.dart';
+
 class YkShoutRealTime extends StatefulWidget {
   const YkShoutRealTime({Key? key}) : super(key: key);
 
@@ -25,10 +27,24 @@ class _YkShoutRealTimeState extends State<YkShoutRealTime> {
   @override
   void initState() {
     super.initState();
+    // PersistentStorage().getStorage("reacrd").then((value) => {
+    //       if (value == 1)
+    //         {
+    //           setState(() {
+    //             isReacrd = true;
+    //           })
+    //         }
+    //     });
   }
 
   Future<void> stopRecorder() async {
     listener?.cancel();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    stopRecorder();
   }
 
   Future<void> record() async {
@@ -75,15 +91,19 @@ class _YkShoutRealTimeState extends State<YkShoutRealTime> {
           ),
           ElevatedButton(
               onPressed: () async {
+                // var s = await PersistentStorage().getStorage("reacrd");
+                // print("isReacrd:${s}");
                 if (isReacrd) {
                   setState(() {
                     isReacrd = false;
                   });
+                  // PersistentStorage().setStorage("reacrd", 0);
                   stopRecorder();
                 } else {
                   setState(() {
                     isReacrd = true;
                   });
+                  // PersistentStorage().setStorage("reacrd", 1);
                   record();
                 }
               },

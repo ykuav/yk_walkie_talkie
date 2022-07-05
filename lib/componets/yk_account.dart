@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../util/shared_preferences.dart';
+
 class YkAccount extends StatelessWidget {
   const YkAccount({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +106,7 @@ class YkAccount extends StatelessWidget {
                 minimumSize: const Size.fromHeight(48),
               ),
               onPressed: () {
+                PersistentStorage().removeStorage("token");
                 Navigator.pushReplacementNamed(context, "/login");
               },
               child: const Text("退出登录"),

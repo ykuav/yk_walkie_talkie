@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:yk_walkie_talkie/componets/yk_devices.dart';
 import 'package:yk_walkie_talkie/pages/yk_upload_audio.dart';
 import 'package:yk_walkie_talkie/pages/device_megaphone_detail.dart';
 import 'package:yk_walkie_talkie/pages/login.dart';
 import 'package:yk_walkie_talkie/protocol/shout_protocol.dart';
+import 'package:yk_walkie_talkie/util/api.dart';
 
 import 'componets/yk_account.dart';
 
@@ -19,7 +21,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return OKToast(
+        child: MaterialApp(
       title: '易酷app',
       theme: ThemeData(
         // This is the theme of your application.
@@ -35,15 +38,15 @@ class MyApp extends StatelessWidget {
       ),
       home: const MyHomePage(title: '易酷app'),
       routes: {
-        // '/': (context) => const MyHomePage(
-        //       title: '易酷app',
-        //     ),
+        '/home': (context) => const MyHomePage(
+              title: '易酷app',
+            ),
         '/login': (context) => const YkLoginPage(),
         '/device_megaphone_detail': (context) =>
             const DeviceMegaphoneDetailPage(),
         '/upload_audio': (context) => const YkUploadAudio(),
       },
-    );
+    ));
   }
 }
 
@@ -67,6 +70,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getToken().then((value) => {
+          if (value == "" || value == null)
+            {Navigator.pushReplacementNamed(context, "/login")}
+        });
+  }
 
   void _incrementCounter() {
     setState(() {

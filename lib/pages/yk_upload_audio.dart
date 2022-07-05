@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:yk_walkie_talkie/protocol/shout_protocol.dart';
 import 'package:toast/toast.dart';
 
@@ -28,7 +29,10 @@ class _YkUploadAudioState extends State<YkUploadAudio> {
         setState(() {
           uploading = false;
         });
-        Toast.show("上传完成", duration: Toast.lengthShort, gravity: Toast.bottom);
+        showToast(
+          "上传完成",
+          position: ToastPosition.bottom,
+        );
         return;
       }
       setState(() {
@@ -64,7 +68,7 @@ class _YkUploadAudioState extends State<YkUploadAudio> {
                         .pickFiles(
                             withData: true,
                             type: FileType.custom,
-                            allowedExtensions: ['mp3', 'wav', 'aac', 'm4a']);
+                            allowedExtensions: ['mp3', 'wav', 'aac', 'm4a', 'flac', 'ogg']);
                     if (result != null) {
                       setState(() {
                         file = File(result.files.first.path!);
@@ -92,7 +96,7 @@ class _YkUploadAudioState extends State<YkUploadAudio> {
                 log("开始上传文件");
                 log("filename:$filename");
                 file.readAsBytes().then((value) {
-                  log("value:$value");
+                  // log("value:$value");
                   completer.complete(value);
                 });
                 setState(() {

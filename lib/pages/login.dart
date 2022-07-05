@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:toast/toast.dart';
 
 import '../componets/base/yk_form_field.dart';
+import '../util/api.dart';
+import '../util/shared_preferences.dart';
 
 class YkLoginPage extends StatefulWidget {
   const YkLoginPage({Key? key}) : super(key: key);
@@ -17,6 +21,27 @@ class _YkLoginPageState extends State<YkLoginPage> {
   var dio = Dio();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> login() async {
+    if (_formKey.currentState!.validate()) {
+      var response = await post('${baseUrl}account/login', {
+        "phone": _phoneController.text,
+        "password": _passwordController.text
+      });
+      print("tk:${response["tk"]}");
+      PersistentStorage().setStorage("token", response["tk"]);
+      showToast("登录成功", position: ToastPosition.bottom);
+      Navigator.pushReplacementNamed(context, "/home");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +69,7 @@ class _YkLoginPageState extends State<YkLoginPage> {
                   children: <Widget>[
                     YkFormField(
                       hintText: '手机号',
-                      controller: _phoneController,
+                      textEditingController: _phoneController,
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return '请输入用户名';
@@ -53,8 +78,9 @@ class _YkLoginPageState extends State<YkLoginPage> {
                       },
                     ),
                     YkFormField(
+                      obscureText: true,
                       hintText: '密码',
-                      controller: _passwordController,
+                      textEditingController: _passwordController,
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return '请输入密码';
@@ -90,10 +116,7 @@ class _YkLoginPageState extends State<YkLoginPage> {
                           minimumSize: const Size.fromHeight(48),
                         ),
                         onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            var response = await dio.post('/login',
-                                data: {'phone': _formKey.currentState});
-                          }
+                          login();
                         },
                         child: const Text('登录'),
                       ),
